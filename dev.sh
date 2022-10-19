@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 EDITOR=hx
-VERSION="1.0"
+VERSION="1.0.1"
 SCRIPT=$(dirname "$0/$1")
 
 declare -A paths
@@ -12,7 +12,12 @@ exists() {
 }
 
 brand() {
-  figlet "Dev Script"
+  echo " ____               ____            _       _"
+  echo "|  _ \  _____   __ / ___|  ___ _ __(_)_ __ | |_"
+  echo "| | | |/ _ \ \ / / \___ \ / __| '__| | '_ \| __|"
+  echo "| |_| |  __/\ V /   ___) | (__| |  | | |_) | |_"
+  echo "|____/ \___| \_/   |____/ \___|_|  |_| .__/ \__|"
+  echo "                                     |_|"
   echo ""
   echo "*---------------------------------------------------------------*"
   echo "| A script to load projects fast in your code editor of choice! |"
