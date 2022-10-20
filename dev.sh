@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 EDITOR=hx
-VERSION="1.0.1"
+VERSION="1.1"
 SCRIPT=$(dirname "$0/$1")
 
 declare -A paths
@@ -67,6 +67,12 @@ case $1 in
     echo "Successfully changed your editor command to $2!"
     ;;
   "path-add")
+    if [[ ! -z $paths[$2] ]]; then
+      echo "Alias '$2' already exists, mapping to '$paths[$2]'."
+      echo "Either remove it first with 'path-rm $2' or use a different alias. You can list your aliases with 'path-ls'."
+      exit 1
+    fi
+
     sed -i -e "1,/paths\[[^\$]/s#paths\[[^\$]#paths\[$2\]=\"$3\"\n&#" $SCRIPT
     
     echo "Added path '$3' as alias '$2' successfully!"
@@ -88,6 +94,10 @@ case $1 in
     ;;
   "path-ls")
     for key val in "${(@kv)paths}"; do
+      if [[ "$key" = "home" ]]; then
+        continue
+      fi
+      
       echo "$key: $val"
     done
     ;;
