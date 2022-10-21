@@ -1,15 +1,12 @@
 #!/bin/zsh
 
 EDITOR=hx
-VERSION="1.1"
+VERSION="1.1.1"
 SCRIPT=$(dirname "$0/$1")
 
 declare -A paths
 paths[home]=$HOME
 
-exists() {
-  eval '[ ${'$3'[$1]+exists} ]'
-}
 
 brand() {
   echo " ____               ____            _       _"
@@ -43,6 +40,60 @@ help() {
   echo "|-> {path}:                 Relative or absolute path of the project to open. Relative paths work from your current location (using the \`pwd\` command)."
   echo ""
   exit 0
+}
+
+graphicsForTablePrint() {
+  keysLength=$1
+  pathsLength=$2
+
+  printf "*-"
+  printf "%.s-" {1..$keysLength}
+  printf "-*-"
+  printf "%.s-" {1..$pathsLength}
+  printf "-*\n"
+}
+
+lineForTablePrint() {
+  keysLength=$1
+  pathsLength=$2
+
+  printf "| "
+  printf "%-${longestKey}s" $3
+  printf " | "
+  printf "%-${longestVal}s" $4
+  printf " |\n"
+}
+
+tablePrint() {
+  array=$1
+
+  longestKey=0
+  longestVal=0
+
+  for key val in "${(@kv)paths}"; do
+    if [ ${#key} -gt $longestKey ]; then
+      longestKey=${#key}
+    fi
+
+    if [ ${#val} -gt $longestVal ]; then
+      longestVal=${#val}
+    fi
+  done
+
+  # Header
+  graphicsForTablePrint $longestKey $longestVal
+  lineForTablePrint     $longestKey $longestVal "Alias" "Path"
+  graphicsForTablePrint $longestKey $longestVal
+
+  # Body
+  for key val in "${(@kv)paths}"; do
+    if [ "$key" = "home" ]; then
+      continue
+    fi
+
+    lineForTablePrint   $longestKey $longestVal $key $val
+  done
+  graphicsForTablePrint $longestKey $longestVal
 }
 
 brand
@@ -93,13 +144,7 @@ case $1 in
     echo "Path '$2' deleted from your paths list."
     ;;
   "path-ls")
-    for key val in "${(@kv)paths}"; do
-      if [[ "$key" = "home" ]]; then
-        continue
-      fi
-      
-      echo "$key: $val"
-    done
+    tablePrint $paths
     ;;
   "")
     echo "No argument provided. Type 'help' to see the available options."
